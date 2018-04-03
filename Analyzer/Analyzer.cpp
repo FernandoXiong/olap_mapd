@@ -879,6 +879,7 @@ void Constant::set_null_value() {
     case kVARCHAR:
     case kCHAR:
     case kTEXT:
+	case kIMAGE:
       constval.stringval = nullptr;
       break;
     case kFLOAT:
@@ -1535,6 +1536,7 @@ bool Datum_equal(const SQLTypeInfo& ti, Datum val1, Datum val2) {
     case kCHAR:
     case kVARCHAR:
     case kTEXT:
+    case kIMAGE:
       return *val1.stringval == *val2.stringval;
     case kNUMERIC:
     case kDECIMAL:

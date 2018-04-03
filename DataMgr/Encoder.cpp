@@ -51,6 +51,7 @@ Encoder* Encoder::Create(Data_Namespace::AbstractBuffer* buffer, const SQLTypeIn
           return new NoneEncoder<double>(buffer);
           break;
         }
+		case kIMAGE:
         case kTEXT:
         case kVARCHAR:
         case kCHAR:

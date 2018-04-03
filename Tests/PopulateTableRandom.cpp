@@ -205,6 +205,7 @@ size_t random_fill(const ColumnDescriptor* cd, DataBlockPtr p, size_t num_elems,
       break;
     case kVARCHAR:
     case kCHAR:
+    case kIMAGE:
       if (cd->columnType.get_compression() == kENCODING_NONE)
         hash = random_fill_string(*p.stringsPtr, num_elems, cd->columnType.get_dimension(), data_volumn);
       break;

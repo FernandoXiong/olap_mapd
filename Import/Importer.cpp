@@ -440,6 +440,7 @@ void TypedImportBuffer::add_value(const ColumnDescriptor* cd,
         addDouble(NULL_DOUBLE);
       }
       break;
+	case kIMAGE:
     case kTEXT:
     case kVARCHAR:
     case kCHAR: {
@@ -513,6 +514,7 @@ void TypedImportBuffer::pop_value() {
     case kDOUBLE:
       double_buffer_->pop_back();
       break;
+	case kIMAGE:
     case kTEXT:
     case kVARCHAR:
     case kCHAR:
@@ -593,6 +595,7 @@ void TypedImportBuffer::add_value(const ColumnDescriptor* cd, const TDatum& datu
         addDouble(NULL_DOUBLE);
       }
       break;
+	case kIMAGE:
     case kTEXT:
     case kVARCHAR:
     case kCHAR: {
@@ -856,6 +859,7 @@ void Loader::distributeToShards(std::vector<OneShardBuffers>& all_shard_import_b
         case kDOUBLE:
           shard_output_buffers[col_idx]->addDouble(double_value_at(*input_buffer, i));
           break;
+		case kIMAGE:
         case kTEXT:
         case kVARCHAR:
         case kCHAR: {
@@ -1111,6 +1115,7 @@ bool Detector::more_restrictive_sqltype(const SQLTypes a, const SQLTypes b) {
   typeorder[kTIME] = 9;
   typeorder[kDATE] = 10;
   typeorder[kTEXT] = 11;
+  typeorder[kIMAGE] = 11;
 
   // note: b < a instead of a < b because the map is ordered most to least restrictive
   return typeorder[b] < typeorder[a];

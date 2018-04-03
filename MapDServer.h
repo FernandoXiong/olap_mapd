@@ -58,6 +58,7 @@ inline TDatumType::type type_to_thrift(const SQLTypeInfo& type_info) {
     case kTEXT:
     case kVARCHAR:
     case kCHAR:
+	case kIMAGE:
       return TDatumType::STR;
     case kTIME:
       return TDatumType::TIME;

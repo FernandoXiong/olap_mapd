@@ -369,6 +369,7 @@ ExpressionRange getLeafColumnRange(const Analyzer::ColumnVar* col_expr,
       col_expr->get_type_info().is_array() ? col_expr->get_type_info().get_elem_type() : col_expr->get_type_info();
   const auto col_ti = get_logical_type_info(col_phys_ti);
   switch (col_ti.get_type()) {
+	case kIMAGE:
     case kTEXT:
     case kCHAR:
     case kVARCHAR:

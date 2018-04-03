@@ -1230,6 +1230,9 @@ std::string SQLType::to_string() const {
     case kTEXT:
       str = "TEXT";
       break;
+    case kIMAGE:
+      str = "IMAGE(" + boost::lexical_cast<std::string>(param1) + ")";
+      break;
     case kNUMERIC:
       str = "NUMERIC(" + boost::lexical_cast<std::string>(param1);
       if (param2 > 0)
@@ -1544,8 +1547,9 @@ void SQLType::check_type() {
   switch (type) {
     case kCHAR:
     case kVARCHAR:
+	case kIMAGE:
       if (param1 <= 0)
-        throw std::runtime_error("CHAR and VARCHAR must have a positive dimension.");
+        throw std::runtime_error("CHAR, VARCHAR and IMAGE must have a positive dimension.");
       break;
     case kDECIMAL:
     case kNUMERIC:

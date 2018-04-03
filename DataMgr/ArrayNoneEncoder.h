@@ -306,7 +306,8 @@ class ArrayNoneEncoder : public Encoder {
       } break;
       case kCHAR:
       case kVARCHAR:
-      case kTEXT: {
+	  case kTEXT:
+      case kIMAGE: {
         assert(buffer_->sqlType.get_compression() == kENCODING_DICT);
         const int32_t* int_array = (int32_t*)array.pointer;
         for (size_t i = 0; i < array.length / sizeof(int32_t); i++) {

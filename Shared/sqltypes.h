@@ -56,7 +56,8 @@ enum SQLTypes {
   kARRAY = 15,
   kINTERVAL_DAY_TIME = 16,
   kINTERVAL_YEAR_MONTH = 17,
-  kSQLTYPE_LAST = 18
+  kIMAGE = 18,
+  kSQLTYPE_LAST = 19
 };
 
 struct VarlenDatum {
@@ -124,7 +125,7 @@ enum EncodingType {
 #define IS_NUMBER(T)                                                                                 \
   (((T) == kINT) || ((T) == kSMALLINT) || ((T) == kDOUBLE) || ((T) == kFLOAT) || ((T) == kBIGINT) || \
    ((T) == kNUMERIC) || ((T) == kDECIMAL))
-#define IS_STRING(T) (((T) == kTEXT) || ((T) == kVARCHAR) || ((T) == kCHAR))
+#define IS_STRING(T) (((T) == kTEXT) || ((T) == kVARCHAR) || ((T) == kCHAR) || ((T) == kIMAGE))
 #define IS_TIME(T) (((T) == kTIME) || ((T) == kTIMESTAMP) || ((T) == kDATE))
 
 #define NULL_BOOLEAN INT8_MIN
@@ -325,6 +326,7 @@ class SQLTypeInfo {
       case kTEXT:
       case kVARCHAR:
       case kCHAR:
+	  case kIMAGE:
         // @TODO handle null strings
         break;
       case kNULLT:
@@ -475,6 +477,7 @@ class SQLTypeInfo {
       case kTEXT:
       case kVARCHAR:
       case kCHAR:
+	  case kIMAGE:
         if (compression == kENCODING_DICT)
           return sizeof(int32_t);  // @TODO(wei) must check DictDescriptor
         break;

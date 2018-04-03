@@ -106,6 +106,7 @@ class TypedImportBuffer : boost::noncopyable {
       case kDOUBLE:
         double_buffer_ = new std::vector<double>();
         break;
+	  case kIMAGE:
       case kTEXT:
       case kVARCHAR:
       case kCHAR:
@@ -166,6 +167,7 @@ class TypedImportBuffer : boost::noncopyable {
       case kDOUBLE:
         delete double_buffer_;
         break;
+	  case kIMAGE:
       case kTEXT:
       case kVARCHAR:
       case kCHAR:
@@ -377,6 +379,7 @@ class TypedImportBuffer : boost::noncopyable {
         double_buffer_->clear();
         break;
       }
+	  case kIMAGE:
       case kTEXT:
       case kVARCHAR:
       case kCHAR: {

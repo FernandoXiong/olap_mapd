@@ -1117,6 +1117,7 @@ class Executor {
         case kCHAR:
         case kTEXT:
         case kVARCHAR:
+		case kIMAGE:
           if (enc_type == kENCODING_DICT) {
             if (constant->get_is_null()) {
               return getOrAddLiteral(int32_t(inline_int_null_val(ti)), device_id);

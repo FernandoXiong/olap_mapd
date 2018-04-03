@@ -48,7 +48,8 @@ std::vector<llvm::Value*> Executor::codegen(const Analyzer::Constant* constant,
           llvm::ConstantFP::get(llvm::Type::getDoubleTy(cgen_state_->context_), constant->get_constval().doubleval)};
     case kVARCHAR:
     case kCHAR:
-    case kTEXT: {
+    case kTEXT:
+    case kIMAGE: {
       CHECK(constant->get_constval().stringval || constant->get_is_null());
       if (constant->get_is_null()) {
         if (enc_type == kENCODING_DICT) {
