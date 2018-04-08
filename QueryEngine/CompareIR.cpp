@@ -119,6 +119,17 @@ std::string string_cmp_func(const SQLOps optype) {
   }
 }
 
+std::string image_cmp_func(const SQLOps optype) {
+	switch (optype) {
+	case kEQ:
+		return "image_eq";
+	case kNE:
+		return "image_ne";
+	default:
+		abort();
+	}
+}
+
 std::shared_ptr<Analyzer::BinOper> make_eq(const std::shared_ptr<Analyzer::ColumnVar>& lhs,
                                            const std::shared_ptr<Analyzer::ColumnVar>& rhs) {
   // Sides of a tuple equality are stripped of cast operators to simplify the logic
@@ -244,7 +255,21 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
     if (lhs_ti.is_string()) {
       CHECK(rhs_ti.is_string());
       CHECK_EQ(lhs_ti.get_compression(), rhs_ti.get_compression());
-      if (lhs_ti.get_compression() == kENCODING_NONE) {
+	  if((lhs_ti.get_type() == kIMAGE) || (rhs_ti.get_type() == kIMAGE)) {
+    	//if (!null_check_suffix.empty()) {
+    	 // img_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
+    	//}
+
+		//call the function
+    	//return cgen_state_->emitCall(image_cmp_func(optype) + (null_check_suffix.empty() ? "" : "_nullable"),
+        //	                        img_cmp_args);
+		
+    	return cgen_state_->emitExternalCall(image_cmp_func(optype),
+									get_int_type(1, cgen_state_->context_),
+        	                        {lhs_lvs.front(),
+									 rhs_lvs.front()});
+	  }
+      else if (lhs_ti.get_compression() == kENCODING_NONE) {
         // unpack pointer + length if necessary
         if (lhs_lvs.size() != 3) {
           CHECK_EQ(size_t(1), lhs_lvs.size());
@@ -256,7 +281,8 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
           rhs_lvs.push_back(cgen_state_->emitCall("extract_str_ptr", {rhs_lvs.front()}));
           rhs_lvs.push_back(cgen_state_->emitCall("extract_str_len", {rhs_lvs.front()}));
         }
-        std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
+
+		std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
         if (!null_check_suffix.empty()) {
           str_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
         }

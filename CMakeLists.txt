@@ -80,6 +80,8 @@ if(XCODE)
   add_definitions("-DXCODE")
 endif()
 
+find_package(OpenCV 3.0 REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
 find_package(Git)
 find_package(Glog REQUIRED)
 find_package(Thrift REQUIRED)

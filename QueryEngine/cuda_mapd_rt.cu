@@ -599,6 +599,7 @@ extern "C" __device__ void agg_max_double_skip_val_shared(int64_t* agg, const do
 #include "StringFunctions.cpp"
 #undef EXECUTE_INCLUDE
 #include "../Utils/StringLike.cpp"
+#include "../Utils/ImgHashCode.cpp"
 #include "../Utils/Regexp.cpp"
 
 extern "C" __device__ uint64_t string_decode(int8_t* chunk_iter_, int64_t pos) {

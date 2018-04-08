@@ -38,6 +38,7 @@
 #include "../Shared/MapDParameters.h"
 #include "../StringDictionary/StringDictionary.h"
 #include "../StringDictionary/StringDictionaryProxy.h"
+#include "../Utils/ImgHashCode.h"
 
 #include <boost/functional/hash.hpp>
 #include <llvm/ExecutionEngine/ExecutionEngine.h>

@@ -24,6 +24,7 @@
  **/
 
 #include "StringLike.h"
+#include "ImgHashCode.h"
 
 enum LikeStatus {
   kLIKE_TRUE,

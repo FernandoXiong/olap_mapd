@@ -55,10 +55,10 @@ inline TDatumType::type type_to_thrift(const SQLTypeInfo& type_info) {
       return TDatumType::DECIMAL;
     case kDOUBLE:
       return TDatumType::DOUBLE;
+	case kIMAGE:
     case kTEXT:
     case kVARCHAR:
     case kCHAR:
-	case kIMAGE:
       return TDatumType::STR;
     case kTIME:
       return TDatumType::TIME;
