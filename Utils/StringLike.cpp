@@ -223,13 +223,14 @@ DEVICE static LikeStatus string_like_match(const char* str,
  * @return true if str matchs pattern, false otherwise.  error condition
  * not handled for now.
  */
-extern "C" DEVICE bool string_like(const char* str,
+extern "C" bool string_like(const char* str,
                                    const int32_t str_len,
                                    const char* pattern,
                                    const int32_t pat_len,
                                    const char escape_char) {
   // @TODO(wei/alex) add runtime error handling
-  LikeStatus status = string_like_match(str, str_len, pattern, pat_len, escape_char, false);
+  //LikeStatus status = string_like_match(str, str_len, pattern, pat_len, escape_char, false);
+  LikeStatus status = image_eq(str, str_len, pattern, pat_len) ? kLIKE_TRUE : kLIKE_FALSE;
   return status == kLIKE_TRUE;
 }
 
@@ -271,8 +272,24 @@ extern "C" DEVICE int32_t StringCompare(const char* s1, const int32_t s1_len, co
     return base_func(lhs, lhs_len, rhs, rhs_len, escape_char) ? 1 : 0;    \
   }
 
-STR_LIKE_NULLABLE(string_like)
 STR_LIKE_NULLABLE(string_ilike)
+
+#undef STR_LIKE_NULLABLE
+
+#define STR_LIKE_NULLABLE(base_func)                                      \
+  extern "C" int8_t base_func##_nullable(const char* lhs,          \
+                                                const int32_t lhs_len,    \
+                                                const char* rhs,          \
+                                                const int32_t rhs_len,    \
+                                                const char escape_char,   \
+                                                const int8_t bool_null) { \
+    if (!lhs || !rhs) {                                                   \
+      return bool_null;                                                   \
+    }                                                                     \
+    return base_func(lhs, lhs_len, rhs, rhs_len, escape_char) ? 1 : 0;    \
+  }
+
+STR_LIKE_NULLABLE(string_like)
 
 #undef STR_LIKE_NULLABLE
 

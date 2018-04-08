@@ -42,7 +42,7 @@
  * @return true if str matchs pattern, false otherwise.  error condition
  * not handled for now.
  */
-extern "C" DEVICE bool string_like(const char* str, int str_len, const char* pattern, int pat_len, char escape_char);
+extern "C" bool string_like(const char* str, int str_len, const char* pattern, int pat_len, char escape_char);
 
 extern "C" DEVICE bool string_ilike(const char* str, int str_len, const char* pattern, int pat_len, char escape_char);
 

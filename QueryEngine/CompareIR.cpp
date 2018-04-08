@@ -255,50 +255,58 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
     if (lhs_ti.is_string()) {
       CHECK(rhs_ti.is_string());
       CHECK_EQ(lhs_ti.get_compression(), rhs_ti.get_compression());
-	  if((lhs_ti.get_type() == kIMAGE) || (rhs_ti.get_type() == kIMAGE)) {
-    	//if (!null_check_suffix.empty()) {
-    	 // img_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
-    	//}
+	  if (lhs_ti.get_compression() == kENCODING_NONE) {
+		  // unpack pointer + length if necessary
+		  if (lhs_lvs.size() != 3) {
+			  CHECK_EQ(size_t(1), lhs_lvs.size());
+			  lhs_lvs.push_back(cgen_state_->emitCall("extract_str_ptr", {lhs_lvs.front()}));
+			  lhs_lvs.push_back(cgen_state_->emitCall("extract_str_len", {lhs_lvs.front()}));
+		  }
+		  if (rhs_lvs.size() != 3) {
+			  CHECK_EQ(size_t(1), rhs_lvs.size());
+			  rhs_lvs.push_back(cgen_state_->emitCall("extract_str_ptr", {rhs_lvs.front()}));
+			  rhs_lvs.push_back(cgen_state_->emitCall("extract_str_len", {rhs_lvs.front()}));
+		  }
 
-		//call the function
-    	//return cgen_state_->emitCall(image_cmp_func(optype) + (null_check_suffix.empty() ? "" : "_nullable"),
-        //	                        img_cmp_args);
-		
-    	return cgen_state_->emitExternalCall(image_cmp_func(optype),
-									get_int_type(1, cgen_state_->context_),
-        	                        {lhs_lvs.front(),
-									 rhs_lvs.front()});
-	  }
-      else if (lhs_ti.get_compression() == kENCODING_NONE) {
-        // unpack pointer + length if necessary
-        if (lhs_lvs.size() != 3) {
-          CHECK_EQ(size_t(1), lhs_lvs.size());
-          lhs_lvs.push_back(cgen_state_->emitCall("extract_str_ptr", {lhs_lvs.front()}));
-          lhs_lvs.push_back(cgen_state_->emitCall("extract_str_len", {lhs_lvs.front()}));
-        }
-        if (rhs_lvs.size() != 3) {
-          CHECK_EQ(size_t(1), rhs_lvs.size());
-          rhs_lvs.push_back(cgen_state_->emitCall("extract_str_ptr", {rhs_lvs.front()}));
-          rhs_lvs.push_back(cgen_state_->emitCall("extract_str_len", {rhs_lvs.front()}));
-        }
-
-		std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
-        if (!null_check_suffix.empty()) {
-          str_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
-        }
-        return cgen_state_->emitCall(string_cmp_func(optype) + (null_check_suffix.empty() ? "" : "_nullable"),
-                                     str_cmp_args);
-      } else {
-        CHECK(optype == kEQ || optype == kNE);
+		  if((lhs_ti.get_type() == kIMAGE) || (rhs_ti.get_type() == kIMAGE)) {
+			  std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
+			  if (!null_check_suffix.empty()) {
+				  str_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
+			  }
+			  return cgen_state_->emitCall(string_cmp_func(optype) + (null_check_suffix.empty() ? "" : "_nullable"),
+					  str_cmp_args);
+		  }
+		  else {
+			  std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
+			  if (!null_check_suffix.empty()) {
+				  str_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
+			  }
+			  return cgen_state_->emitCall(string_cmp_func(optype) + (null_check_suffix.empty() ? "" : "_nullable"),
+					  str_cmp_args);
+		  }
+	  } else {
+		  CHECK(optype == kEQ || optype == kNE);
       }
-    }
-    return null_check_suffix.empty()
-               ? cgen_state_->ir_builder_.CreateICmp(llvm_icmp_pred(optype), lhs_lvs.front(), rhs_lvs.front())
-               : cgen_state_->emitCall(icmp_name(optype) + "_" + numeric_type_name(lhs_ti) + null_check_suffix,
-                                       {lhs_lvs.front(),
-                                        rhs_lvs.front(),
-                                        ll_int(inline_int_null_val(lhs_ti)),
-                                        inlineIntNull(SQLTypeInfo(kBOOLEAN, false))});
+	}
+	if((lhs_ti.get_type() == kIMAGE) || (rhs_ti.get_type() == kIMAGE)) {
+		return null_check_suffix.empty()
+			? cgen_state_->ir_builder_.CreateICmp(llvm_icmp_pred(optype), lhs_lvs.front(), rhs_lvs.front())
+			: cgen_state_->emitExternalCall(image_cmp_func(optype) + null_check_suffix,
+					get_int_type(1, cgen_state_->context_),
+					{lhs_lvs.front(),
+					rhs_lvs.front(),
+					ll_int(inline_int_null_val(lhs_ti)),
+					inlineIntNull(SQLTypeInfo(kBOOLEAN, false))});
+	}
+	else {
+		return null_check_suffix.empty()
+			? cgen_state_->ir_builder_.CreateICmp(llvm_icmp_pred(optype), lhs_lvs.front(), rhs_lvs.front())
+			: cgen_state_->emitCall(icmp_name(optype) + "_" + numeric_type_name(lhs_ti) + null_check_suffix,
+					{lhs_lvs.front(),
+					rhs_lvs.front(),
+					ll_int(inline_int_null_val(lhs_ti)),
+					inlineIntNull(SQLTypeInfo(kBOOLEAN, false))});
+	}
   }
   if (lhs_ti.get_type() == kFLOAT || lhs_ti.get_type() == kDOUBLE) {
     return null_check_suffix.empty()
