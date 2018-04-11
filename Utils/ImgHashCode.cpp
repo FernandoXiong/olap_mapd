@@ -43,45 +43,6 @@ IMG_CMP_NULLABLE(image_eq)
 IMG_CMP_NULLABLE(image_ne)
 
 #undef IMG_CMP_NULLABLE
-/*
-extern "C" DEVICE bool ImageCompare(const char* s1,
-									const int32_t s1_len,
-									const char* s2,
-									const int32_t s2_len) {
-	//std::string img_path1(s1, s1_len);
-	//std::string img_path2(s2, s2_len);
-	//return ImgHashCode(img_path1).similarTo(ImgHashCode(img_path2));
-	return true;
-}
-
-extern "C" DEVICE bool image_eq(const char *lhs,
-								const int32_t lhs_len,
-								const char* rhs,
-								const int32_t rhs_len) {
-	return ImageCompare(lhs, lhs_len, rhs, rhs_len);
-}
-
-extern "C" DEVICE bool image_ne(const char *lhs,
-								const int32_t lhs_len,
-								const char* rhs,
-								const int32_t rhs_len) {
-	return !ImageCompare(lhs, lhs_len, rhs, rhs_len);
-}
-
-#define IMG_CMP_NULLABLE(base_func)																				\
-	extern "C" DEVICE int8_t base_func##_nullable(																	\
-		const char* lhs, const int32_t lhs_len, const char* rhs, const int32_t rhs_len, const int8_t bool_null) {	\
-		if(!lhs || !rhs) {																							\
-			return bool_null;																						\
-		}																											\
-		return base_func(lhs, lhs_len, rhs, rhs_len) ? 1 : 0;														\
-	}
-
-IMG_CMP_NULLABLE(image_eq)
-IMG_CMP_NULLABLE(image_ne)
-
-#undef IMG_CMP_NULLABLE
-*/
 
 ImgHashCode::ImgHashCode(std::string img_path) {
 	Mat img = imread(img_path, 0); 
@@ -134,11 +95,14 @@ bool ImgHashCode::similarTo(ImgHashCode iCode) {
 		count += BitCount(hashcode[i] ^ compareHashCode[i]); 
 	}
 
+/*
 	float similarity = 1.0 - (float)count / (CODE_SIZE * 32);
 	if(similarity >= 0.9)
 		return true;
 	else
 		return false;
+*/
+	return count <= 15;
 }
 
 void ImgHashCode::print() {
@@ -152,21 +116,21 @@ short ImgHashCode::GetRotation(const Mat &img) {
 
 	int iWidth = img.cols;
 	int iHeight = img.rows;
-	for(int i = 0; i < iWidth; ++i) {
+	for(int i = 0; i < iHeight; ++i) {
 		int point = i * iWidth;
-		for(int j = 0; j < iHeight; ++j) {
+		for(int j = 0; j < iWidth; ++j) {
 			int light = img.data[point + j];
 			m_00 += light;
-			m_10 += (i + 1) * light;
-			m_01 += (j + 1) * light;
+			m_01 += (i + 1) * light;
+			m_10 += (j + 1) * light;
 		}
 	}
 
 	if(m_00 == 0)
 		return 0;
 	else {
-		float x = (float)m_01 / m_00 - 1;
-		float y = (float)m_10 / m_00 - 1;
+		float x = (float)m_10 / m_00 - 1;
+		float y = (float)m_01 / m_00 - 1;
 		float center_x = (float)(iWidth - 1) / 2;
 		float center_y = (float)(iHeight - 1) / 2;
 		//std::cout << "(x, y): (" << x << ", " << y << ")" << std::endl;

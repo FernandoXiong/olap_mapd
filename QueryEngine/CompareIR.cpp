@@ -119,6 +119,7 @@ std::string string_cmp_func(const SQLOps optype) {
   }
 }
 
+/*
 std::string image_cmp_func(const SQLOps optype) {
 	switch (optype) {
 	case kEQ:
@@ -129,6 +130,7 @@ std::string image_cmp_func(const SQLOps optype) {
 		abort();
 	}
 }
+*/
 
 std::shared_ptr<Analyzer::BinOper> make_eq(const std::shared_ptr<Analyzer::ColumnVar>& lhs,
                                            const std::shared_ptr<Analyzer::ColumnVar>& rhs) {
@@ -268,6 +270,7 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
 			  rhs_lvs.push_back(cgen_state_->emitCall("extract_str_len", {rhs_lvs.front()}));
 		  }
 
+		/*
 		  if((lhs_ti.get_type() == kIMAGE) || (rhs_ti.get_type() == kIMAGE)) {
 			  std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
 			  if (!null_check_suffix.empty()) {
@@ -277,17 +280,19 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
 					  str_cmp_args);
 		  }
 		  else {
+		  */
 			  std::vector<llvm::Value*> str_cmp_args{lhs_lvs[1], lhs_lvs[2], rhs_lvs[1], rhs_lvs[2]};
 			  if (!null_check_suffix.empty()) {
 				  str_cmp_args.push_back(inlineIntNull(SQLTypeInfo(kBOOLEAN, false)));
 			  }
 			  return cgen_state_->emitCall(string_cmp_func(optype) + (null_check_suffix.empty() ? "" : "_nullable"),
 					  str_cmp_args);
-		  }
+		  //}
 	  } else {
 		  CHECK(optype == kEQ || optype == kNE);
       }
 	}
+	/*
 	if((lhs_ti.get_type() == kIMAGE) || (rhs_ti.get_type() == kIMAGE)) {
 		return null_check_suffix.empty()
 			? cgen_state_->ir_builder_.CreateICmp(llvm_icmp_pred(optype), lhs_lvs.front(), rhs_lvs.front())
@@ -299,6 +304,7 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
 					inlineIntNull(SQLTypeInfo(kBOOLEAN, false))});
 	}
 	else {
+	*/
 		return null_check_suffix.empty()
 			? cgen_state_->ir_builder_.CreateICmp(llvm_icmp_pred(optype), lhs_lvs.front(), rhs_lvs.front())
 			: cgen_state_->emitCall(icmp_name(optype) + "_" + numeric_type_name(lhs_ti) + null_check_suffix,
@@ -307,7 +313,7 @@ llvm::Value* Executor::codegenCmp(const SQLOps optype,
 					ll_int(inline_int_null_val(lhs_ti)),
 					inlineIntNull(SQLTypeInfo(kBOOLEAN, false))});
 	}
-  }
+  //}
   if (lhs_ti.get_type() == kFLOAT || lhs_ti.get_type() == kDOUBLE) {
     return null_check_suffix.empty()
                ? cgen_state_->ir_builder_.CreateFCmp(llvm_fcmp_pred(optype), lhs_lvs.front(), rhs_lvs.front())
