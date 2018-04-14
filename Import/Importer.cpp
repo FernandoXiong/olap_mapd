@@ -1115,7 +1115,7 @@ bool Detector::more_restrictive_sqltype(const SQLTypes a, const SQLTypes b) {
   typeorder[kTIME] = 9;
   typeorder[kDATE] = 10;
   typeorder[kTEXT] = 11;
-  typeorder[kIMAGE] = 11;
+  typeorder[kIMAGE] = 12;
 
   // note: b < a instead of a < b because the map is ordered most to least restrictive
   return typeorder[b] < typeorder[a];
