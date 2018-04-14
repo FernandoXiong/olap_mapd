@@ -78,7 +78,7 @@ struct ChunkMetadata {
       case kVARCHAR:
       case kCHAR:
       case kTEXT:
-	  case kIMAGE:
+	  case kBIGTEXT:
         if (sqlType.get_compression() == kENCODING_DICT) {
           chunkStats.min.intval = min;
           chunkStats.max.intval = max;

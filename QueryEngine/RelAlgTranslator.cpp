@@ -123,7 +123,7 @@ std::pair<Datum, bool> datum_from_scalar_tv(const ScalarTargetValue* scalar_tv, 
       }
       break;
     }
-	case kIMAGE:
+	case kBIGTEXT:
     case kTEXT:
     case kVARCHAR:
     case kCHAR: {

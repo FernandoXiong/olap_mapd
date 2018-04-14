@@ -455,7 +455,7 @@ inline int64_t extract_from_datum(const Datum datum, const SQLTypeInfo& ti) {
     case kCHAR:
     case kVARCHAR:
     case kTEXT:
-    case kIMAGE:
+    case kBIGTEXT:
       CHECK_EQ(kENCODING_DICT, ti.get_compression());
     case kINT:
       return datum.intval;

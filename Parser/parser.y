@@ -167,7 +167,7 @@ using namespace Parser;
 %token CASE CAST CHAR_LENGTH CHARACTER CHECK CLOSE COLUMN COMMIT CONTINUE COPY CREATE CURRENT
 %token CURSOR DATABASE DATE DATETIME DATE_TRUNC DECIMAL DECLARE DEFAULT DELETE DESC DICTIONARY DISTINCT DOUBLE DROP
 %token ELSE END EXISTS EXPLAIN EXTRACT FETCH FIRST FLOAT FOR FOREIGN FOUND FROM
-%token GRANT GROUP HAVING IF ILIKE IMAGE IN INSERT INTEGER INTO
+%token GRANT GROUP HAVING IF ILIKE BIGTEXT IN INSERT INTEGER INTO
 %token IS LANGUAGE LAST LENGTH LIKE LIMIT MOD NOW NULLX NUMERIC OF OFFSET ON OPEN OPTION
 %token ORDER PARAMETER PRECISION PRIMARY PRIVILEGES PROCEDURE
 %token SMALLINT SOME TABLE TEMPORARY TEXT THEN TIME TIMESTAMP TO TRUNCATE UNION
@@ -1137,8 +1137,8 @@ data_type:
 	|	BOOLEAN { $<nodeval>$ = new SQLType(kBOOLEAN); }
 	|	CHARACTER { $<nodeval>$ = new SQLType(kCHAR); }
 	|	CHARACTER '(' non_neg_int ')' { $<nodeval>$ = new SQLType(kCHAR, $<intval>3); }
-	|	IMAGE { $<nodeval>$ = new SQLType(kIMAGE); }
-	|	IMAGE'(' non_neg_int ')' { $<nodeval>$ = new SQLType(kIMAGE, $<intval>3); }
+	|	BIGTEXT { $<nodeval>$ = new SQLType(kBIGTEXT); }
+	|	BIGTEXT '(' non_neg_int ')' { $<nodeval>$ = new SQLType(kBIGTEXT, $<intval>3); }
 	|	NUMERIC { $<nodeval>$ = new SQLType(kNUMERIC); }
 	|	NUMERIC '(' non_neg_int ')' { $<nodeval>$ = new SQLType(kNUMERIC, $<intval>3); }
 	|	NUMERIC '(' non_neg_int ',' non_neg_int ')' { $<nodeval>$ = new SQLType(kNUMERIC, $<intval>3, $<intval>5, false); }

@@ -73,7 +73,7 @@ void Chunk::getChunkBuffer(DataMgr* data_mgr,
         array_encoder->set_index_buf(index_buf);
         break;
       }
-	  case kIMAGE:
+	  case kBIGTEXT:
       case kTEXT:
       case kVARCHAR:
       case kCHAR: {
@@ -115,7 +115,7 @@ size_t Chunk::getNumElemsForBytesInsertData(const DataBlockPtr& src_data,
       ArrayNoneEncoder* array_encoder = dynamic_cast<ArrayNoneEncoder*>(buffer->encoder.get());
       return array_encoder->getNumElemsForBytesInsertData(src_data.arraysPtr, start_idx, num_elems, byte_limit);
     }
-	case kIMAGE:
+	case kBIGTEXT:
     case kTEXT:
     case kVARCHAR:
     case kCHAR: {
@@ -136,7 +136,7 @@ ChunkMetadata Chunk::appendData(DataBlockPtr& src_data, const size_t num_elems, 
         ArrayNoneEncoder* array_encoder = dynamic_cast<ArrayNoneEncoder*>(buffer->encoder.get());
         return array_encoder->appendData(src_data.arraysPtr, start_idx, num_elems);
       }
-	  case kIMAGE:
+	  case kBIGTEXT:
       case kTEXT:
       case kVARCHAR:
       case kCHAR: {
@@ -167,7 +167,7 @@ void Chunk::init_encoder() {
         array_encoder->set_index_buf(index_buf);
         break;
       }
-	  case kIMAGE:
+	  case kBIGTEXT:
       case kTEXT:
       case kVARCHAR:
       case kCHAR: {

@@ -80,7 +80,7 @@ void scan_chunk(const ChunkMetadata& chunk_metadata, const Chunk& chunk, size_t&
       case kVARCHAR:
       case kCHAR:
       case kTEXT:
-	  case kIMAGE:
+	  case kBIGTEXT:
         if (cd->columnType.get_compression() == kENCODING_NONE) {
           // cout << "read string: " << string((char*)vd.pointer, vd.length) << endl;
           boost::hash_combine(hash, string_hash(string((char*)vd.pointer, vd.length)));

@@ -194,7 +194,7 @@ TypePtr get_arrow_type(const SQLTypeInfo& mapd_type, const std::shared_ptr<Array
     case kNUMERIC:
     case kCHAR:
     case kVARCHAR:
-	case kIMAGE:
+	case kBIGTEXT:
     case kTIME:
     case kTIMESTAMP:
     case kDATE:

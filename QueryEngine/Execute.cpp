@@ -2081,7 +2081,7 @@ void Executor::executeSimpleInsert(const Planner::RootPlan* root_plan) {
         col_buffers[col_ids[col_idx]] = reinterpret_cast<int8_t*>(col_data);
         break;
       }
-      case kIMAGE:
+      case kBIGTEXT:
       case kTEXT:
       case kVARCHAR:
       case kCHAR: {

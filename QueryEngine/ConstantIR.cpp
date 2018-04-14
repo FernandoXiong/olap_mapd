@@ -49,7 +49,7 @@ std::vector<llvm::Value*> Executor::codegen(const Analyzer::Constant* constant,
     case kVARCHAR:
     case kCHAR:
     case kTEXT:
-    case kIMAGE: {
+    case kBIGTEXT: {
       CHECK(constant->get_constval().stringval || constant->get_is_null());
       if (constant->get_is_null()) {
         if (enc_type == kENCODING_DICT) {
