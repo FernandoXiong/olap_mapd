@@ -22,9 +22,8 @@
  *
  * Copyright (c) 2014 MapD Technologies, Inc.  All rights reserved.
  **/
-
 #include "StringLike.h"
-#include "ImgHashCode.h"
+#include "PrimeCoding.h"
 
 enum LikeStatus {
   kLIKE_TRUE,
@@ -230,7 +229,9 @@ extern "C" bool string_like(const char* str,
                                    const char escape_char) {
   // @TODO(wei/alex) add runtime error handling
   //LikeStatus status = string_like_match(str, str_len, pattern, pat_len, escape_char, false);
-  LikeStatus status = image_eq(str, str_len, pattern, pat_len) ? kLIKE_TRUE : kLIKE_FALSE;
+  std::string filePath(str, str_len);
+  std::string word(pattern, pat_len);
+  LikeStatus status = word_in_text(word, filePath) ? kLIKE_TRUE : kLIKE_FALSE;
   return status == kLIKE_TRUE;
 }
 

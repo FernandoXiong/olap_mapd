@@ -29,7 +29,7 @@
 #include <glog/logging.h>
 #include "../Catalog/Catalog.h"
 #include "../Shared/sqltypes.h"
-#include "../Utils/ImgHashCode.h"
+#include "../Utils/PrimeCoding.h"
 #include "Analyzer.h"
 
 namespace Analyzer {
@@ -1539,7 +1539,7 @@ bool Datum_equal(const SQLTypeInfo& ti, Datum val1, Datum val2) {
     case kTEXT:
       return *val1.stringval == *val2.stringval;
     case kBIGTEXT:
-      return ImgHashCode(*val1.stringval).similarTo(ImgHashCode(*val2.stringval));
+      return word_in_text(*val2.stringval, *val1.stringval);
     case kNUMERIC:
     case kDECIMAL:
     case kBIGINT:

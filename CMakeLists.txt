@@ -57,7 +57,7 @@ if(PREFER_STATIC_LIBS)
   set(CUDA_USE_STATIC_CUDA_RUNTIME ON)
 endif()
 
-option(ENABLE_CUDA "Enable CUDA support" ON)
+option(ENABLE_CUDA "Enable CUDA support" OFF)
 if(ENABLE_CUDA)
   find_package(CUDA REQUIRED)
   include_directories(${CUDA_INCLUDE_DIRS})

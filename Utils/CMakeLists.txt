@@ -2,7 +2,7 @@ set(utils_source_files
     StringLike.cpp
     Regexp.cpp
     ChunkIter.cpp
-	ImgHashCode.cpp
+	PrimeCoding.cpp
 )
 
 add_library(Utils ${utils_source_files})
