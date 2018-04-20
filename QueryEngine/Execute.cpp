@@ -38,6 +38,7 @@
 #include "Shared/checked_alloc.h"
 #include "Shared/MapDParameters.h"
 #include "Shared/scope.h"
+#include "Utils/ImgIndex.h"
 
 #include "AggregatedColRange.h"
 #include "StringDictionaryGenerations.h"
@@ -1969,7 +1970,10 @@ int8_t* insert_one_dict_str(const ColumnDescriptor* cd,
       }
       str_id = inline_fixed_encoding_null_val(cd->columnType);
     }
-    *col_data = str_id;
+	*col_data = str_id;
+	if(cd->columnType.get_type() == kIMAGE) {
+		CreateOrInsertIndex(cd->columnName, dd->dictFolderPath, str);
+	}
   }
   int_col_val = *col_data;
   return reinterpret_cast<int8_t*>(col_data);

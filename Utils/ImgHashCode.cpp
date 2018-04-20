@@ -45,13 +45,13 @@ IMG_CMP_NULLABLE(image_ne)
 #undef IMG_CMP_NULLABLE
 
 ImgHashCode::ImgHashCode(std::string img_path) {
-	Mat img = imread(img_path, 0); 
-	if(img.empty()) {
-		std::cout << "read image failed!" << std::endl;
-		return;
-	}   
 	for(int i = 0; i < CODE_SIZE; ++i)
 		hashcode[i] = 0;
+	Mat img = imread(img_path, 0); 
+	if(img.empty()) {
+		//std::cout << "read image failed!" << std::endl;
+		return;
+	}   
 	Mat img_blur;
 	GaussianBlur(img, img_blur, Size(3, 3), 0, 0); 
 
@@ -169,11 +169,6 @@ void ImgHashCode::ComputeHashCode(Mat img, uint *hashcode) {
 					++count;
 				}
 			}
-			/*
-			   for(int i = 0; i < CODE_SIZE * 32; ++i)
-			   cout << hashValue[i] << ", ";
-			   cout << endl;
-			   */
 		}
 	}
 
@@ -187,11 +182,6 @@ void ImgHashCode::ComputeHashCode(Mat img, uint *hashcode) {
 		if(hashValue[i] > 0) {
 			++hashcode[0];
 		}
-		/*
-		   for(int i = CODE_SIZE - 1; i >= 0; --i)
-		   cout << bitset<32>(hashcode[i]);
-		   cout << endl;
-		   */
 	}
 }
 
