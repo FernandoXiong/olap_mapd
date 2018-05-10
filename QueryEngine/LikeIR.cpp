@@ -16,6 +16,7 @@
 
 #include "Execute.h"
 
+#include "Utils/ImgIndex.h"
 #include "Parser/ParserNode.h"
 
 extern "C" uint64_t string_decode(int8_t* chunk_iter_, int64_t pos) {
@@ -140,21 +141,37 @@ llvm::Value* Executor::codegenDictLike(const std::shared_ptr<Analyzer::Expr> lik
   CHECK(dict_like_arg_ti.is_string());
   CHECK_EQ(kENCODING_DICT, dict_like_arg_ti.get_compression());
   const auto sdp = getStringDictionaryProxy(dict_like_arg_ti.get_comp_param(), row_set_mem_owner_, true);
-  if (sdp->storageEntryCount() > 200000000) {
-    return nullptr;
+  int entry_num = sdp->storageEntryCount();
+  if (entry_num > 200000000) {
+	  return nullptr;
   }
   const auto& pattern_ti = pattern->get_type_info();
   CHECK(pattern_ti.is_string());
   CHECK_EQ(kENCODING_NONE, pattern_ti.get_compression());
   const auto& pattern_datum = pattern->get_constval();
   const auto& pattern_str = *pattern_datum.stringval;
-  const auto matching_ids = sdp->getLike(pattern_str, ilike, is_simple, escape_char);
-  // InIntegerSet requires 64-bit values
-  std::vector<int64_t> matching_ids_64(matching_ids.size());
-  std::copy(matching_ids.begin(), matching_ids.end(), matching_ids_64.begin());
-  const auto in_values =
-      std::make_shared<Analyzer::InIntegerSet>(dict_like_arg, matching_ids_64, dict_like_arg_ti.get_notnull());
-  return codegen(in_values.get(), co);
+  if(dict_like_arg_ti.get_type() != kIMAGE) {
+	  const auto matching_ids = sdp->getLike(pattern_str, ilike, is_simple, escape_char);
+	  // InIntegerSet requires 64-bit values
+	  std::vector<int64_t> matching_ids_64(matching_ids.size());
+	  std::copy(matching_ids.begin(), matching_ids.end(), matching_ids_64.begin());
+	  const auto in_values =
+		  std::make_shared<Analyzer::InIntegerSet>(dict_like_arg, matching_ids_64, dict_like_arg_ti.get_notnull());
+	  return codegen(in_values.get(), co);
+  }
+  else {
+	const int dict_id = dict_like_arg_ti.get_comp_param();
+	const auto dd = catalog_->getMetadataForDict(dict_id);
+	const auto column_arg = std::dynamic_pointer_cast<Analyzer::ColumnVar>(dict_like_arg);
+	const auto cd = get_column_descriptor(column_arg->get_column_id(), column_arg->get_table_id(), *catalog_);
+	//ShowIndex(cd->columnName, dd->dictFolderPath); 
+	const auto matching_ids = SearchIndex(cd->columnName, dd->dictFolderPath, pattern_str, entry_num);
+	std::vector<int64_t> matching_ids_64(matching_ids.size());
+	std::copy(matching_ids.begin(), matching_ids.end(), matching_ids_64.begin());
+	const auto in_values =
+		std::make_shared<Analyzer::InIntegerSet>(dict_like_arg, matching_ids_64, dict_like_arg_ti.get_notnull());
+	return codegen(in_values.get(), co);
+  }
 }
 
 llvm::Value* Executor::codegen(const Analyzer::RegexpExpr* expr, const CompilationOptions& co) {

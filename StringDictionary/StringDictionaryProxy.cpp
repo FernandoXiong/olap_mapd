@@ -19,8 +19,10 @@
 #include "../Shared/sqltypes.h"
 #include "../Utils/StringLike.h"
 #include "../Utils/Regexp.h"
+#include "../Utils/ImgIndex.h"
 #include "Shared/thread_count.h"
 
+#include <iostream>
 #include <glog/logging.h>
 #include <sys/fcntl.h>
 

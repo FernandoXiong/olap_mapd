@@ -1961,7 +1961,9 @@ int8_t* insert_one_dict_str(const ColumnDescriptor* cd,
     const auto& str = *col_datum.stringval;
     const auto dd = catalog.getMetadataForDict(dict_id);
     CHECK(dd && dd->stringDict);
+	size_t before_count = dd->stringDict->storageEntryCount();
     int32_t str_id = dd->stringDict->getOrAdd(str);
+	size_t after_count = dd->stringDict->storageEntryCount();
     const bool invalid = str_id > max_valid_int_value<T>();
     if (invalid || str_id == inline_int_null_value<int32_t>()) {
       if (invalid) {
@@ -1971,7 +1973,7 @@ int8_t* insert_one_dict_str(const ColumnDescriptor* cd,
       str_id = inline_fixed_encoding_null_val(cd->columnType);
     }
 	*col_data = str_id;
-	if(cd->columnType.get_type() == kIMAGE) {
+	if(cd->columnType.get_type() == kIMAGE && after_count > before_count) {
 		CreateOrInsertIndex(cd->columnName, dd->dictFolderPath, str);
 	}
   }
